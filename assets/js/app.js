@@ -96,6 +96,14 @@ const app = {
     const _this = this; //gan this ben ngoai
     const cdWidth = cd.offsetWidth;
 
+    // xu ly quay/dung cd-thumb
+    const cdThumbAnimate = cdThumb.animate([{ transform: "rotate(360deg)" }], {
+      duration: 10000, //10s
+      iterations: Infinity, //vo han
+    });
+
+    cdThumbAnimate.pause();
+
     // xu ly zoom +- CD
     document.onscroll = function () {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -118,16 +126,19 @@ const app = {
       }
     };
 
+    console.log(cdThumbAnimate);
     // khi song duoc play
     audio.onplay = function () {
       _this.isPlaying = true;
       player.classList.add("playing");
+      cdThumbAnimate.play();
     };
 
     // khi song bi pause
     audio.onpause = function () {
       _this.isPlaying = false;
       player.classList.remove("playing");
+      cdThumbAnimate.pause();
     };
 
     // khi tien do bai hat thay doi
