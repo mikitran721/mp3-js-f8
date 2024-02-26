@@ -20,6 +20,8 @@ const cdThumb = $(".cd-thumb");
 const audio = $("#audio");
 const playBtn = $(".btn-toggle-play");
 const progress = $("#progress");
+const nextBtn = $(".btn-next");
+const prevBtn = $(".btn-prev");
 
 const app = {
   currentIndex: 0,
@@ -126,7 +128,6 @@ const app = {
       }
     };
 
-    console.log(cdThumbAnimate);
     // khi song duoc play
     audio.onplay = function () {
       _this.isPlaying = true;
@@ -157,12 +158,38 @@ const app = {
       const seekTime = (e.target.value * audio.duration) / 100;
       audio.currentTime = seekTime;
     };
+
+    // xu ly khi next song
+    nextBtn.onclick = function () {
+      _this.nextSong();
+      audio.play();
+    };
+
+    // xu ly khi prev song
+    prevBtn.onclick = function () {
+      _this.prevSong();
+      audio.play();
+    };
   },
   loadCurrentSong: function () {
     heading.textContent = this.currentSong.name;
     cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
     audio.src = this.currentSong.path;
     console.log(heading, cdThumb, audio);
+  },
+  nextSong: function () {
+    this.currentIndex++;
+    if (this.currentIndex >= this.songs.length) {
+      this.currentIndex = 0;
+    }
+    this.loadCurrentSong();
+  },
+  prevSong: function () {
+    this.currentIndex--;
+    if (this.currentIndex < 0) {
+      this.currentIndex = this.songs.length - 1;
+    }
+    this.loadCurrentSong();
   },
   start: function () {
     // dinh nghia cac props
