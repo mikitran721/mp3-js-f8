@@ -22,10 +22,12 @@ const playBtn = $(".btn-toggle-play");
 const progress = $("#progress");
 const nextBtn = $(".btn-next");
 const prevBtn = $(".btn-prev");
+const randomBtn = $(".btn-random");
 
 const app = {
   currentIndex: 0,
   isPlaying: false,
+  isRandom: false,
   songs: [
     {
       name: "Cố hương",
@@ -161,21 +163,34 @@ const app = {
 
     // xu ly khi next song
     nextBtn.onclick = function () {
-      _this.nextSong();
+      if (_this.isRandom) {
+        _this.playRandomSong();
+      } else {
+        _this.nextSong();
+      }
       audio.play();
     };
 
     // xu ly khi prev song
     prevBtn.onclick = function () {
-      _this.prevSong();
+      if (_this.isRandom) {
+        _this.playRandomSong();
+      } else {
+        _this.prevSong();
+      }
       audio.play();
+    };
+
+    // xu ly bat/tat random song
+    randomBtn.onclick = function (e) {
+      _this.isRandom = !_this.isRandom;
+      randomBtn.classList.toggle("active", _this.isRandom);
     };
   },
   loadCurrentSong: function () {
     heading.textContent = this.currentSong.name;
     cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
     audio.src = this.currentSong.path;
-    console.log(heading, cdThumb, audio);
   },
   nextSong: function () {
     this.currentIndex++;
@@ -189,6 +204,15 @@ const app = {
     if (this.currentIndex < 0) {
       this.currentIndex = this.songs.length - 1;
     }
+    this.loadCurrentSong();
+  },
+  playRandomSong: function () {
+    //random # bai hien tai
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * this.songs.length);
+    } while (newIndex === this.currentIndex);
+    this.currentIndex = newIndex;
     this.loadCurrentSong();
   },
   start: function () {
