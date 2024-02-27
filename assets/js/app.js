@@ -23,11 +23,13 @@ const progress = $("#progress");
 const nextBtn = $(".btn-next");
 const prevBtn = $(".btn-prev");
 const randomBtn = $(".btn-random");
+const repeatBtn = $(".btn-repeat");
 
 const app = {
   currentIndex: 0,
   isPlaying: false,
   isRandom: false,
+  isRepeat: false,
   songs: [
     {
       name: "Cố hương",
@@ -185,6 +187,21 @@ const app = {
     randomBtn.onclick = function (e) {
       _this.isRandom = !_this.isRandom;
       randomBtn.classList.toggle("active", _this.isRandom);
+    };
+
+    //xu ly next song khi audio ended
+    audio.onended = function () {
+      if (_this.isRepeat) {
+        audio.play();
+      } else {
+        nextBtn.click();
+      }
+    };
+
+    // xu ly khi click repeat button
+    repeatBtn.onclick = function (e) {
+      _this.isRepeat = !_this.isRepeat;
+      repeatBtn.classList.toggle("active", _this.isRepeat);
     };
   },
   loadCurrentSong: function () {
