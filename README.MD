@@ -3,6 +3,7 @@
 - Template: static.collectui.com
 - Từ khóa tìm kiếm `HTML Audio/Video DOM Reference`
 - animation with JS
+- scroll to view js
 
 # NOTES:
 

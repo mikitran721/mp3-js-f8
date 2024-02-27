@@ -172,6 +172,7 @@ const app = {
       }
       audio.play();
       _this.render();
+      _this.scrollToActiveSong();
     };
 
     // xu ly khi prev song
@@ -183,6 +184,7 @@ const app = {
       }
       audio.play();
       _this.render();
+      _this.scrollToActiveSong();
     };
 
     // xu ly bat/tat random song
@@ -205,6 +207,16 @@ const app = {
       _this.isRepeat = !_this.isRepeat;
       repeatBtn.classList.toggle("active", _this.isRepeat);
     };
+  },
+  //scroll to active song
+  scrollToActiveSong: function () {
+    //delay to load
+    setTimeout(() => {
+      $(".song.active").scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 500);
   },
   loadCurrentSong: function () {
     heading.textContent = this.currentSong.name;
