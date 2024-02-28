@@ -13,6 +13,8 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const PLAYER_STORAGE_KEY = "mp3-player-f8";
+
 const player = $(".player");
 const cd = $(".cd");
 const heading = $("header h2");
@@ -24,12 +26,14 @@ const nextBtn = $(".btn-next");
 const prevBtn = $(".btn-prev");
 const randomBtn = $(".btn-random");
 const repeatBtn = $(".btn-repeat");
+const playlist = $(".playlist");
 
 const app = {
   currentIndex: 0,
   isPlaying: false,
   isRandom: false,
   isRepeat: false,
+  config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
   songs: [
     {
       name: "Cố hương",
@@ -68,10 +72,16 @@ const app = {
       image: "./assets/img/pic4.jpg",
     },
   ],
+  setConfig: function (key, value) {
+    this.config[key] = value;
+    localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
+  },
   render: function () {
     const htmls = this.songs.map((song, index) => {
       return `
-            <div class="song ${index === this.currentIndex ? "active" : ""}">
+            <div class="song ${
+              index === this.currentIndex ? "active" : ""
+            }" data-index="${index}">
                 <div
                     class="thumb"
                     style="
@@ -90,6 +100,7 @@ const app = {
     });
     $(".playlist").innerHTML = htmls.join("");
   },
+  // getter
   defineProperties: function () {
     // dinh nghia thuoc tinh cho object
     Object.defineProperty(this, "currentSong", {
@@ -190,7 +201,15 @@ const app = {
     // xu ly bat/tat random song
     randomBtn.onclick = function (e) {
       _this.isRandom = !_this.isRandom;
+      _this.setConfig("isRandom", _this.isRandom);
       randomBtn.classList.toggle("active", _this.isRandom);
+    };
+
+    // xu ly khi click repeat button
+    repeatBtn.onclick = function (e) {
+      _this.isRepeat = !_this.isRepeat;
+      _this.setConfig("isRepeat", _this.isRepeat);
+      repeatBtn.classList.toggle("active", _this.isRepeat);
     };
 
     //xu ly next song khi audio ended
@@ -202,10 +221,22 @@ const app = {
       }
     };
 
-    // xu ly khi click repeat button
-    repeatBtn.onclick = function (e) {
-      _this.isRepeat = !_this.isRepeat;
-      repeatBtn.classList.toggle("active", _this.isRepeat);
+    //play song when click on playlist
+    playlist.onclick = function (e) {
+      const songNode = e.target.closest(".song:not(.active)");
+      if (songNode || !e.target.closest(".option")) {
+        //xu ly khi click vao song
+        if (songNode) {
+          //console.log(songNode.getAttribute("data-index")); //songNode.dataset.index
+          _this.currentIndex = Number(songNode.dataset.index);
+          _this.loadCurrentSong();
+          _this.render();
+          audio.play();
+        }
+        //xu ly khi click vao option
+        if (e.target.closest(".option")) {
+        }
+      }
     };
   },
   //scroll to active song
@@ -222,6 +253,10 @@ const app = {
     heading.textContent = this.currentSong.name;
     cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
     audio.src = this.currentSong.path;
+  },
+  loadConfig: function () {
+    this.isRandom = this.config.isRandom;
+    this.isRepeat = this.config.isRepeat;
   },
   nextSong: function () {
     this.currentIndex++;
@@ -247,6 +282,9 @@ const app = {
     this.loadCurrentSong();
   },
   start: function () {
+    // load config into app
+    this.loadConfig();
+
     // dinh nghia cac props
     this.defineProperties();
 
@@ -256,7 +294,12 @@ const app = {
     //Tải tt bài hát 1st vào UI
     this.loadCurrentSong();
 
+    // render playlist
     this.render();
+
+    // load config
+    randomBtn.classList.toggle("active", this.isRandom);
+    repeatBtn.classList.toggle("active", this.isRepeat);
   },
 };
 
